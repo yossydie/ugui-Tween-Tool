@@ -1,4 +1,5 @@
 ﻿using UnityEngine;
+using UnityEngine.Events;
 using System.Collections;
 
 /// <summary>
@@ -13,8 +14,8 @@ namespace uGUI {
 		public float delay = 0f;
 		public float duration = 1f;
 		public bool ignoreTimeScale = true;
-		public MonoBehaviour eventRecevier = null;
-		public string onFinished = null;
+		public int tweenGroup = 0;
+        public UnityEvent finishedEvent = new UnityEvent ();
 
 		float mAmountPerDelta = 1000f;
 		float mDuration = 0f;
@@ -48,7 +49,11 @@ namespace uGUI {
 		void Start () {
 			Update ();
 		}
-		
+
+        public void OnDestroy () {
+            finishedEvent.RemoveAllListeners ();
+        }
+
 		// Update is called once per frame
 		void Update () {
 			float delta = ignoreTimeScale?Time.unscaledDeltaTime : Time.deltaTime;
@@ -77,9 +82,8 @@ namespace uGUI {
 			if ((loopStyle == LoopStyle.Once) && (duration == 0f || mFactor > 1f || mFactor < 0f)) {
 				Sample(mFactor, true);
 				enabled = false;//finished.set script enable
-				if (eventRecevier != null && !string.IsNullOrEmpty(onFinished)) {
-					eventRecevier.Invoke(onFinished, 0);
-				}
+                // Finish Event
+                finishedEvent.Invoke ();
 			}
 			else {
 				Sample(mFactor, false);
@@ -113,8 +117,8 @@ namespace uGUI {
 			delay = 0f;
 			duration = 1f;
 			ignoreTimeScale = true;
-			eventRecevier = null;
-			onFinished = null;
+            tweenGroup = 0;
+			finishedEvent.RemoveAllListeners ();
 			
 			mAmountPerDelta = 1000f;
 			mDuration = 0f;
@@ -138,5 +142,39 @@ namespace uGUI {
 			comp.enabled = true;
 			return comp;
 		}
+
+        #region Play Control Method
+
+        public void ResetTimeBeforePlay ()
+        {
+            mAmountPerDelta = 1000f;
+            mDuration = 0f;
+            mStartTime = -1f;
+            mFactor = 0f;
+        }
+
+        public void Play ()
+        {
+            ResetTimeBeforePlay ();
+            enabled = true;
+        }
+
+        public void Stop ()
+        {
+            enabled = false;
+            ResetTimeBeforePlay ();
+        }
+
+        public void Pause ()
+        {
+            enabled = false;
+        }
+
+        public void Resume ()
+        {
+            enabled = true;
+        }
+
+        #endregion
 	}
 }
