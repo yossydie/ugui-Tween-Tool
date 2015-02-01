@@ -3,16 +3,15 @@ using UnityEngine.UI;
 using System.Collections;
 using System.Collections.Generic;
 
-namespace uGUI
-{
-    public class uTweenAlpha : uTweenValue
-    {
+namespace uGUI {
+	public class uTweenAlpha : uTweenValue {
 
-        private Text mText;
-        private Light mLight;
-        private Material mMat;
-        private Image mImage;
-        private SpriteRenderer mSpriteRender;
+		private Text mText;
+		private Light mLight;
+		private Material mMat;
+		private Image mImage;
+        private RawImage mRawImage;
+		private SpriteRenderer mSpriteRender;
 
         private bool mCached = false;
 
@@ -21,14 +20,14 @@ namespace uGUI
         private Text[] mTexts;
         private Light[] mLights;
         private Image[] mImages;
+        private RawImage[] mRawImages;
         private SpriteRenderer[] mSpriteRenders;
         private Renderer[] mRenderers;
         private Dictionary<int, Color> orgColorDic = new Dictionary<int, Color> ();
         private float childValue = 0f;
         private bool mCachedChildren = false;
 
-        void Cache ()
-        {
+		void Cache() {
             if (includeChildren == false) {
                 mCached = true;
 
@@ -38,6 +37,8 @@ namespace uGUI
                 if (mLight != null) { return; }
                 mImage = GetComponent<Image> ();
                 if (mImage != null) { return; }
+                mRawImage = GetComponent<RawImage> ();
+                if (mRawImage != null) { return; }
                 mSpriteRender = GetComponent<SpriteRenderer> ();
                 if (mSpriteRender != null) { return; }
                 if (renderer != null) {
@@ -51,20 +52,20 @@ namespace uGUI
                 mTexts = GetComponentsInChildren<Text> ();
                 mLights = GetComponentsInChildren<Light> ();
                 mImages = GetComponentsInChildren<Image> ();
+                mRawImages = GetComponentsInChildren<RawImage> ();
                 mSpriteRenders = GetComponentsInChildren<SpriteRenderer> ();
                 mRenderers = GetComponentsInChildren<Renderer> ();
             }
-        }
+		}
 
-        public float alpha
-        {
-            get
-            {
+		public float alpha {
+			get {
                 if (includeChildren == false) {
                     if (!mCached) Cache ();
                     if (mText != null) return mText.color.a;
                     if (mLight != null) return mLight.color.a;
                     if (mImage != null) return mImage.color.a;
+                    if (mRawImage != null) return mRawImage.color.a;
                     if (mSpriteRender != null) return mSpriteRender.color.a;
                     if (mMat != null) return mMat.color.a;
 
@@ -73,9 +74,8 @@ namespace uGUI
                     return childValue;
                 }
                 return Color.white.a;
-            }
-            set
-            {
+			}
+			set {
                 Color c = Color.white;
 
                 if (includeChildren == false) {
@@ -95,6 +95,11 @@ namespace uGUI
                         c.a = value;
                         mImage.color = c;
                     }
+                    if (mRawImage != null) {
+                        c = mRawImage.color;
+                        c.a = value;
+                        mRawImage.color = c;
+                    }
                     if (mSpriteRender != null) {
                         c = mSpriteRender.color;
                         c.a = value;
@@ -113,14 +118,14 @@ namespace uGUI
 
                     if (mTexts != null) {
                         foreach (var item in mTexts) {
-                            int key = item.gameObject.GetInstanceID ();
-                            if (orgColorDic.ContainsKey (key) == false) {
+                            int key = item.gameObject.GetInstanceID();
+                            if (orgColorDic.ContainsKey(key) == false) {
                                 orgColorDic[key] = item.color;
                             }
                             c = item.color;
                             c.a = value * orgColorDic[key].a;
                             item.color = c;
-                        }
+	                    }
                     }
                     if (mLights != null) {
                         foreach (var item in mLights) {
@@ -131,10 +136,21 @@ namespace uGUI
                             c = item.color;
                             c.a = value * orgColorDic[key].a;
                             item.color = c;
-                        }
+	                    }
                     }
                     if (mImages != null) {
                         foreach (var item in mImages) {
+                            int key = item.gameObject.GetInstanceID ();
+                            if (orgColorDic.ContainsKey (key) == false) {
+                                orgColorDic[key] = item.color;
+                            }
+                            c = item.color;
+                            c.a = value * orgColorDic[key].a;
+                            item.color = c;
+	                    }
+                    }
+                    if (mRawImages != null) {
+                        foreach (var item in mRawImages) {
                             int key = item.gameObject.GetInstanceID ();
                             if (orgColorDic.ContainsKey (key) == false) {
                                 orgColorDic[key] = item.color;
@@ -153,7 +169,7 @@ namespace uGUI
                             c = item.color;
                             c.a = value * orgColorDic[key].a;
                             item.color = c;
-                        }
+	                    }
                     }
                     if (mRenderers != null) {
                         foreach (var item in mRenderers) {
@@ -164,17 +180,17 @@ namespace uGUI
                             c = item.material.color;
                             c.a = value * orgColorDic[key].a;
                             item.material.color = c;
-                        }
+	                    }
                     }
                 }
-            }
-        }
+			}
+		}
 
-        protected override void ValueUpdate (float value, bool isFinished)
-        {
-            alpha = value;
-        }
+		protected override void ValueUpdate (float value, bool isFinished)
+		{
+			alpha = value;
+		}
 
-    }
+	}
 
 }

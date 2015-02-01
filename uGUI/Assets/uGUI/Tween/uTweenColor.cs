@@ -12,6 +12,7 @@ namespace uGUI {
 		private Light mLight;
 		private Material mMat;
 		private Image mImage;
+        private RawImage mRawImage;
 		private SpriteRenderer mSpriteRender;
 
 		bool mCached = false;
@@ -24,6 +25,8 @@ namespace uGUI {
 			if (mLight != null){ return;}
 			mImage = GetComponent<Image> ();
 			if (mImage != null) { return;}
+            mRawImage = GetComponent<RawImage> ();
+            if (mRawImage != null) { return; }
 			mSpriteRender = GetComponent<SpriteRenderer> ();
 			if (mSpriteRender != null) { return;}
 			mMat = renderer.material;
@@ -36,6 +39,7 @@ namespace uGUI {
 				if (mText != null) return mText.color;
 				if (mLight != null) return mLight.color;
 				if (mImage != null) return mImage.color;
+                if (mRawImage != null) return mRawImage.color;
 				if (mSpriteRender != null) return mSpriteRender.color;
 				if (mMat != null) return mMat.color;
 				return Color.white;
@@ -45,6 +49,7 @@ namespace uGUI {
 				if (mText != null) mText.color = value;
 				if (mLight != null) mLight.color = value;
 				if (mImage != null) mImage.color = value;
+                if (mRawImage != null) mRawImage.color = value;
 				if (mSpriteRender != null) mSpriteRender.color = value;
 				if (mMat != null) mMat.color = value;
 			}
